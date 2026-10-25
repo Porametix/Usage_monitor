@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "serial-protocol-v1.schema.json",
+  "title": "AI Usage Monitor snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "type", "snapshot_id", "generated_at", "providers"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "type": {"const": "usage_snapshot"},
+    "snapshot_id": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "generated_at": {"type": "string", "format": "date-time", "maxLength": 40},
+    "budget_usd": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 1000000000}, {"type": "null"}]},
+    "providers": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "status", "source", "last_updated"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1, "maxLength": 32, "pattern": "^[a-z0-9_]+$"},
+          "name": {"type": "string", "minLength": 1, "maxLength": 32, "pattern": "^[^\\x00-\\x1f]+$"},
+          "status": {"enum": ["ok", "unsupported", "manual", "unavailable", "error", "stale"]},
+          "source": {"enum": ["provider_reported", "locally_tracked", "estimated", "manual", "demo"]},
+          "input_tokens": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 9007199254740991}, {"type": "null"}]},
+          "output_tokens": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 9007199254740991}, {"type": "null"}]},
+          "total_tokens": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 9007199254740991}, {"type": "null"}]},
+          "actual_cost_usd": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 1000000000}, {"type": "null"}]},
+          "estimated_cost_usd": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 1000000000}, {"type": "null"}]},
+          "budget_usd": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 1000000000}, {"type": "null"}]},
+          "quota_remaining_percent": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 100}, {"type": "null"}]},
+          "last_updated": {"type": "string", "format": "date-time", "maxLength": 40},
+          "reset_at": {"anyOf": [{"type": "string", "format": "date-time", "maxLength": 40}, {"type": "null"}]},
+          "message": {"anyOf": [{"type": "string", "maxLength": 120, "pattern": "^[^\\x00-\\x1f]*$"}, {"type": "null"}]}
+        }
+      }
+    }
+  },
+  "$comment": "Provider IDs must be unique. If input_tokens and output_tokens are both present, total_tokens must equal their sum. Validation is repeated by both collector and firmware."
+}

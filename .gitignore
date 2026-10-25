@@ -1,0 +1,30 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local runtime state
+.env
+.env.*
+*.log
+*.sqlite
+*.sqlite3
+secrets.json
+config.local.*
+
+# PlatformIO
+.pio/
+firmware/esp32_tft/.pio/
+
+# Editor/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
